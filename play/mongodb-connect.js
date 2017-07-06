@@ -18,8 +18,8 @@ MongoClient.connect('mongodb://localhost:27017/nodeApp',function(error,db){
   //   console.log(JSON.stringify(result.ops,undefined,2));
   // });
 
-  db.collection('users').insertOne({
-    name:'saurabh',
+  db.collection('nodeApp').insertOne({
+    text:'saurabh',
     location:'india',
     age:25
   },function(err,result){
