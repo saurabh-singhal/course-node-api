@@ -4,8 +4,8 @@ var {ObjectID} = require('mongodb');
 const _  = require('lodash');
 var mongoose = require('./db/mongoose.js')
 var {Todo} = require('./models/Todo.js');
-var user = require('./models/user.js');
-
+var {user} = require('./models/user.js');
+var {authenticate} = require('./middleware/authenticate.js');
 const port = process.env.PORT||3000;
 
 var app = express();
@@ -80,6 +80,34 @@ Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then(function(docs){
   console.log(error);
 });
 
+});
+
+app.post('/users',function(req,res){
+  var body = _.pick(req.body,['email','password']);
+
+  var abc = new user(body);
+
+  abc.save().then(function(){
+    return abc.generateAuthToken();
+    //res.send(docs);
+    console.log(docs);
+  },function(e){
+    res.status(400).send(e);
+    console.log(e);
+  }).then(function(token){
+    res.header('x-auth',token).send(abc);
+  },function(error){
+    console.log(error);
+  }).catch((ee)=>{
+    res.status(400).send(e);
+  })
+
+});
+
+
+
+app.get('/users/me',authenticate,function(req,res){
+res.send(req.user);
 });
 
 app.listen(port,()=>{
